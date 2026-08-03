@@ -1,0 +1,4 @@
+- É pra usar o algoritmo de gilsepe?
+- O que seria a transformação laplace inversa?
+- Como calcular P_{ab}(t)? Não foi usada a transformação de laplace pra evitar calcular isso?
+- O que exatamente seria \mu_k e \lambda_k? Pq usando k*\lambda com \lambda = 0.5 e k = 19 => k*\lambda > 1
