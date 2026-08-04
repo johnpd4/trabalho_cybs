@@ -2,3 +2,4 @@
 - Pra fazer os plots de escada ele me disse que tem opção pra isso no plotly
 - Perguntar como adicionar imigração, mas é só dar add em nu na func de transicao de nascimentos
 - Trocar texto do eixo X e Y no plotly
+- Como o default do switch no R funciona
