@@ -64,31 +64,42 @@ main_BDP_server = function(input, output, session){
     
   })
   
+  process_list = reactive({
+    
+    processes = list()
+    
+    for(i in 1:5){
+      
+      # print(paste("iteration:", i, "tmax:", input$t_max))
+      
+      if(tolower(input$process_type) == "linear"){
+        processes[[i]] = BDP(a = input$a, t_max = input$t_max,
+                             method = "linear", theta = c(input$gamma, input$mu))
+      } else if(tolower(input$process_type) == "immigration"){
+        processes[[i]] = BDP(a = input$a, t_max = input$t_max,
+                             method = "immigration", theta = c(input$gamma, input$mu, input$nu))
+      } else if(tolower(input$process_type) == "restricted growth"){
+        processes[[i]] = BDP(a = input$a, t_max = input$t_max,
+                             method = "restricted_growth", theta = c(input$gamma, input$mu, input$beta))
+      } else if(tolower(input$process_type) == "sis"){
+        processes[[i]] = BDP(a = input$a, t_max = input$t_max,
+                             method = "sis", theta = c(input$beta, input$gamma, input$N))
+      }
+      
+    }
+    
+    return(processes)
+    
+  })
+  
   output$process_plot = renderPlotly({
     
     fig = NULL
     
-    for(i in 1:5){
-      
-      print(paste("iteration:", i, "tmax:", input$t_max))
+    process_list = process_list()
     
-      if(tolower(input$process_type) == "linear"){
-        process = BDP(a = input$a, t_max = input$t_max,
-                      method = "linear", theta = c(input$gamma, input$mu))
-      } else if(tolower(input$process_type) == "immigration"){
-        process = BDP(a = input$a, t_max = input$t_max,
-                      method = "immigration", theta = c(input$gamma, input$mu, input$nu))
-      } else if(tolower(input$process_type) == "restricted growth"){
-        process = BDP(a = input$a, t_max = input$t_max,
-                      method = "restricted_growth", theta = c(input$gamma, input$mu, input$beta))
-      } else if(tolower(input$process_type) == "sis"){
-        process = BDP(a = input$a, t_max = input$t_max,
-                      method = "sis", theta = c(input$beta, input$gamma, input$N))
-      }
-      
-      
-      fig = plotly_process(process, old_fig = fig, add = !is.null(fig))
-      
+    for(i in 1:length(process_list)){
+      fig = plotly_process(process_list[[i]], old_fig = fig)
     }
     
     return(fig)
