@@ -3,3 +3,6 @@
 - O que é (s) dos a, b e A, B's? Ele é a unidade da transformada, mas o q fica na função aplicada?
 - No SIS, N é um parâmetro? Porque o estado k ja encapsula a pop. atual, então tem q ser?
 	- N < k => prob nasc negativa
+
+Sobre o shiny:
+- Vale a pena simular varios processos diferentes ou só iguais pra ilustrar?

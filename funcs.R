@@ -125,12 +125,52 @@ theta_update_sis = function(k, theta){
   
 }
 
-plotly_process = function(obj){
+plotly_process = function(obj, old_fig = NULL, add = FALSE){
   
-  fig = plot_ly(data = obj, x =~ cumsum(T.), y =~ state, type = "scatter", mode = "lines+markers", line = list(shape = "hv"))
-  fig = fig |> layout(xaxis = list(title = "Time"),
-                      yaxis = list(title = "Population Size"))
+  if(!add){
+    fig = plot_ly(data = obj, x =~ cumsum(T.), y =~ state, name = "P1",
+                  type = "scatter", mode = "lines+markers", line = list(shape = "hv"))
+    fig = fig |> layout(xaxis = list(title = "Time"),
+                        yaxis = list(title = "Population Size"))
+  } else if(add & !is.null(old_fig)) {
+    trace_num = length(fig$x$visdat) + 1
+    fig = old_fig |>
+      add_trace(data = obj, x =~ cumsum(T.), y =~ state, name = paste0("P", trace_num),
+                type = "scatter", mode = "lines+markers", line = list(shape = "hv"))
+  }
   
   return(fig)
+  
+}
+
+# fig = BDP(19, 1, "linear", c(0.5, 0.3)) |> plotly_process()
+# fig = BDP(19, 1, "linear", c(0.5, 0.3)) |> plotly_process(add = TRUE, old_fig = fig)
+# fig = BDP(19, 1, "linear", c(0.5, 0.3)) |> plotly_process(add = TRUE, old_fig = fig)
+# fig = BDP(19, 1, "linear", c(0.5, 0.3)) |> plotly_process(add = TRUE, old_fig = fig)
+# fig = BDP(19, 1, "linear", c(0.5, 0.3)) |> plotly_process(add = TRUE, old_fig = fig)
+# fig
+
+real_suff_stats = function(obj){
+  
+  return(obj |> dplyr::group_by(state) |> summarise(U = sum(U), D = sum(D), T. = sum(T.)))
+  
+}
+
+dynamic_buttons = function(ids, labels, default_vals){
+  
+  x = list()
+  
+  for(i in 1:length(ids)){
+    
+    x[[i]] = sliderInput(ids[i],
+                         labels[i],
+                         min = 0,
+                         value = default_vals[i],
+                         max = 100,
+                         step = 0.01)
+    
+  }
+  
+  return(div(x))
   
 }
