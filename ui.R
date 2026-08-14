@@ -2,6 +2,7 @@ if(!require(pacman)){install.packages("pacman")}
 pacman::p_load(shiny, bslib, plotly, shinyWidgets)
 
 source("tabs/main_BDP.R")
+source("tabs/sufficient_statistics.R")
 source("tabs/pred_vs_real.R")
 
 ui = page_navbar(
@@ -10,6 +11,9 @@ ui = page_navbar(
   
   # in tabs/main_BDP.R
   main_BDP_ui(),
+  
+  # in tabs/sufficient_statistics.R
+  sufficient_statistics_ui(),
   
   # in tabs/pred_vs_real.R
   pred_vs_real_ui(),

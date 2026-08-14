@@ -25,8 +25,8 @@ main_BDP_ui = function(){
         sliderInput("t_max",
                     "Time to Simulate",
                     min = 0.1,
-                    max = 10,
-                    value = 1),
+                    max = 20,
+                    value = 5),
         
         uiOutput("process_controls"),
         
@@ -88,6 +88,8 @@ main_BDP_server = function(input, output, session){
       
     }
     
+    attr(processes, "type") = input$process_type
+    
     return(processes)
     
   })
@@ -105,5 +107,8 @@ main_BDP_server = function(input, output, session){
     return(fig)
     
   })
+  
+  # Pra as outras paginas terem acesso
+  return(process_list)
   
 }

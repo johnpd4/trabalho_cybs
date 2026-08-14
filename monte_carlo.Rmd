@@ -1,0 +1,49 @@
+---
+title: "monte_carlo"
+output: html_document
+---
+
+```{r}
+set.seed(00333466 + 00329922)
+
+simulate_linear_data = function(N, lambda, mu){
+
+  dados = data.frame(
+    a = integer(N),
+    b = integer(N),
+    t = numeric(N)
+  )
+
+  for(i in 1:N){
+
+    a = sample(0:20, 1)
+    t = runif(1, 0.1, 3)
+
+    process = BDP(
+      a = a,
+      t_max = t,
+      method = "linear",
+      theta = c(lambda, mu)
+    )
+
+    b = tail(process$state, 1)
+
+    dados[i, ] = c(a, b, t)
+  }
+
+  return(dados)
+
+}
+
+dados = simulate_linear_data(
+  N = 500,
+  lambda = 0.5,
+  mu = 0.2
+)
+
+tempo = Sys.time()
+trajetoria = EM_linear(dados$a, dados$b, dados$t, c(0.5, 0.5), K = 35, M0 = 35, Mj = 35, J = 35, tol = 10e-8, max_iter = 10)
+tempo_final = Sys.time() - tempo
+tempo_final
+```
+

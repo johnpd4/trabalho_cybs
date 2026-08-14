@@ -3,3 +3,11 @@
 - Perguntar como adicionar imigração, mas é só dar add em nu na func de transicao de nascimentos
 - Trocar texto do eixo X e Y no plotly
 - Como o default do switch no R funciona
+- Ajuda com os casos especiais de A_k e B_k
+- Ajuda debuggando f_ij
+- Mudar o algoritmo de recursivo pra iterativo A_k e B_k
+- Dúvidas sobre s0 e st na fórmula da transf. laplace inversa
+- Ideia de colocar funcao arbitraria na inversao laplace
+- Uso de sapply no mu_list pra ter menos problemas ao inves de um loop
+- Pra deixar o codigo mais rapido tirar o denominador da func E_U do loop, ja que ele eh sempre igual
+- Novamente pro codigo mais rapido jogar a soma pra dentro da transformacao de laplace q nem o paper diz
