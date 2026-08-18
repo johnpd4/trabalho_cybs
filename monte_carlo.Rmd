@@ -4,6 +4,8 @@ output: html_document
 ---
 
 ```{r}
+source("funcs.R")
+
 set.seed(00333466 + 00329922)
 
 simulate_linear_data = function(N, lambda, mu){
@@ -36,13 +38,13 @@ simulate_linear_data = function(N, lambda, mu){
 }
 
 dados = simulate_linear_data(
-  N = 500,
+  N = 75,
   lambda = 0.5,
   mu = 0.2
 )
 
 tempo = Sys.time()
-trajetoria = EM_linear(dados$a, dados$b, dados$t, c(0.5, 0.5), K = 35, M0 = 35, Mj = 35, J = 35, tol = 10e-8, max_iter = 10)
+trajetoria = EM_linear(dados$a, dados$b, dados$t, c(0.5, 0.5), K = 35, M0 = 15, Mj = 15, J = 60, max_iter = 5)
 tempo_final = Sys.time() - tempo
 tempo_final
 ```

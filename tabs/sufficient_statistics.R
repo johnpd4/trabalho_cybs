@@ -57,7 +57,7 @@ sufficient_statistics_ui = function(){
                    textOutput("T_real_p1")
               ),
               card(class = "border-0 bg-transparent shadow-none",
-                p("Pred. U: 0"),
+                   textOutput("U_est_p1"),
                 p("Pred. D: 0"),
                 p("Pred. T: 0")
               ),
@@ -77,7 +77,7 @@ sufficient_statistics_ui = function(){
                    textOutput("T_real_p2")
               ),
               card(class = "border-0 bg-transparent shadow-none",
-                   p("Pred. U: 0"),
+                   textOutput("U_est_p2"),
                    p("Pred. D: 0"),
                    p("Pred. T: 0")
               ),
@@ -101,7 +101,7 @@ sufficient_statistics_ui = function(){
                    textOutput("T_real_p3")
               ),
               card(class = "border-0 bg-transparent shadow-none",
-                   p("Pred. U: 0"),
+                   textOutput("U_est_p3"),
                    p("Pred. D: 0"),
                    p("Pred. T: 0")
               ),
@@ -120,7 +120,7 @@ sufficient_statistics_ui = function(){
                    textOutput("T_real_p4")
               ),
               card(class = "border-0 bg-transparent shadow-none",
-                   p("Pred. U: 0"),
+                   textOutput("U_est_p4"),
                    p("Pred. D: 0"),
                    p("Pred. T: 0")
               ),
@@ -142,7 +142,7 @@ sufficient_statistics_ui = function(){
                  textOutput("T_real_p5")
             ),
             card(class = "border-0 bg-transparent shadow-none",
-                 p("Pred. U: 0"),
+                 textOutput("U_est_p5"),
                  p("Pred. D: 0"),
                  p("Pred. T: 0")
             ),
@@ -208,18 +208,22 @@ sufficient_statistics_server = function(input, output, session, process_list){
 
     Y_list = Y_list()
 
-    a = Y_list[[1]]
-    b = Y_list[[2]]
-    t = Y_list[[3]]
-
     EU_list = list()
+    
+    update_func = theta_update()
 
     for(i in 1:length(Y_list)){
 
+      Y = Y_list[[i]]
+      
+      a = Y[[1]]
+      b = Y[[2]]
+      t = Y[[3]]
+      
       EU_list[[i]] = E_U(a = a, b = b, t = t,
                          K = input$K, M0 = input$M0,
                          Mj = input$Mj, J = input$J,
-                         theta_update = theta_update())
+                         theta_update = update_func)
 
     }
 

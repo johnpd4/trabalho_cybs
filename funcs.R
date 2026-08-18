@@ -478,7 +478,6 @@ laplace_inv = function(fun, t, M0, Mj, J, eps = 8){
   
   first = (exp(A/2) / (2 * t)) * Re(fun(s0, M0))
   
-  # j = 1,...,J terms
   sum_second = 0
   
   for(j in 1:J){
@@ -661,7 +660,8 @@ E_UDT = function(a, b, t,
       
     }
     
-    total
+    return(total)
+    
   }
   
   denominator = laplace_inv(fun_denominador, t, M0, Mj, J)
@@ -669,6 +669,21 @@ E_UDT = function(a, b, t,
   EU = laplace_inv(fun_U, t, M0, Mj, J) / denominator
   ED = laplace_inv(fun_D, t, M0, Mj, J) / denominator
   ET = laplace_inv(fun_T, t, M0, Mj, J) / denominator
+  
+  print(paste0("U =", EU, "D =", ED, "T. =", ET))
+  
+  if(any(!is.finite(c(denominator, EU, ED, ET)))){
+    
+    print(c(denominator = denominator, EU = EU, ED = ED, ET = ET))
+    
+    print(paste("a =", a, "b =", b, "t =", t, "theta =",
+                paste(theta, collapse = ", ")))
+    stop("Falha na inversão de Laplace")
+  }
+  
+  if(abs(denominator) < .Machine$double.eps){
+    stop("Denominador aproximadamente zero: ", denominator, " | a = ", a, " b = ", b, " t = ", t)
+  }
   
   return(c(U = EU, D = ED, T. = ET))
   
@@ -682,11 +697,7 @@ EM_linear = function(a, b, t,
   
   theta = theta_init
   
-  path = data.frame(
-    iter = 0,
-    lambda = theta[1],
-    mu = theta[2]
-  )
+  path = data.frame(iter = 0, lambda = theta[1], mu = theta[2])
   
   for(iter in 1:max_iter){
     
@@ -694,37 +705,53 @@ EM_linear = function(a, b, t,
     ED_total = 0
     ET_total = 0
     
+    print(paste0("Iniciando calculo iteracao ", iter))
+    
     # E-step
-    for(i in seq_along(a)){
+    for(i in 1:length(a)){
       
       E_udt = E_UDT(a = a[i], b = b[i], t = t[i],
                     K = K, M0 = M0, Mj = Mj, J = J,
                     theta_update = theta_update_simple_linear, theta = theta)
       
-      EU_total = EU_total + E_udt["U"]
-      ED_total = ED_total + E_udt["D"]
-      ET_total = ET_total + E_udt["T."]
+      if(any(is.na(E_udt))){
+        print(paste("NA encontrado na observação", i))
+        print(paste(
+          "a =", a[i],
+          "b =", b[i],
+          "t =", t[i]
+        ))
+        print(paste("theta =", paste(theta, collapse = ", ")))
+        print(E_udt)
+        
+        stop("E_UDT retornou NA")
+      }
+      
+      EU_total = EU_total + E_udt[[1]]
+      ED_total = ED_total + E_udt[[2]]
+      ET_total = ET_total + E_udt[[3]]
       
     }
     
     # M-step
+    print(EU_total)
+    print(ED_total)
+    print(ET_total)
+    
     lambda_new = EU_total / ET_total
     mu_new = ED_total / ET_total
+    
+    print(lambda_new)
+    print(mu_new)
     
     theta_new = c(lambda_new, mu_new)
     
     
-    cat("Iteracao ", iter, " | Lambda: ", lambda_new, " | Mu: ", mu_new, "\n",
-      sep = "")
+    print(paste0("Iteracao ", iter, " | Lambda: ", lambda_new, " | Mu: ", mu_new))
     
     
-    path[nrow(path) + 1, ] = c(
-      iter = iter,
-      lambda = lambda_new,
-      mu = mu_new
-    )
+    path[nrow(path) + 1, ] = c(iter = iter, lambda = lambda_new, mu = mu_new)
     
-    # Convergence
     if(max(abs(theta_new - theta)) < tol){
       theta = theta_new
       break
