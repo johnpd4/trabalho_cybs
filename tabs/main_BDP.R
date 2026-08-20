@@ -73,22 +73,32 @@ main_BDP_server = function(input, output, session){
       # print(paste("iteration:", i, "tmax:", input$t_max))
       
       if(tolower(input$process_type) == "linear"){
+        theta_vec = c(input$gamma, input$mu)
         processes[[i]] = BDP(a = input$a, t_max = input$t_max,
-                             method = "linear", theta = c(input$gamma, input$mu))
+                             method = "linear", theta = theta_vec)
       } else if(tolower(input$process_type) == "immigration"){
+        theta_vec = c(input$gamma, input$mu, input$nu)
         processes[[i]] = BDP(a = input$a, t_max = input$t_max,
-                             method = "immigration", theta = c(input$gamma, input$mu, input$nu))
+                             method = "immigration", theta = theta_vec)
       } else if(tolower(input$process_type) == "restricted growth"){
+        theta_vec = c(input$gamma, input$mu, input$beta)
         processes[[i]] = BDP(a = input$a, t_max = input$t_max,
-                             method = "restricted_growth", theta = c(input$gamma, input$mu, input$beta))
+                             method = "restricted_growth", theta = theta_vec)
       } else if(tolower(input$process_type) == "sis"){
+        theta_vec = c(input$beta, input$gamma, input$N)
         processes[[i]] = BDP(a = input$a, t_max = input$t_max,
-                             method = "sis", theta = c(input$beta, input$gamma, input$N))
+                             method = "sis", theta = theta_vec)
+      } else {
+        theta_vec = c(input$gamma, input$mu)
+        processes[[i]] = BDP(a = input$a, t_max = input$t_max,
+                             method = "linear", theta = theta_vec)
+        input$process_type = "linear"
       }
       
     }
     
-    attr(processes, "type") = input$process_type
+    attr(processes, "type") = gsub(" ", "_", tolower(input$process_type))
+    attr(processes, "theta") = theta_vec
     
     return(processes)
     

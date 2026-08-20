@@ -58,8 +58,8 @@ sufficient_statistics_ui = function(){
               ),
               card(class = "border-0 bg-transparent shadow-none",
                    textOutput("U_est_p1"),
-                p("Pred. D: 0"),
-                p("Pred. T: 0")
+                   textOutput("D_est_p1"),
+                   textOutput("T_est_p1")
               ),
             )
           ),
@@ -78,8 +78,8 @@ sufficient_statistics_ui = function(){
               ),
               card(class = "border-0 bg-transparent shadow-none",
                    textOutput("U_est_p2"),
-                   p("Pred. D: 0"),
-                   p("Pred. T: 0")
+                   textOutput("D_est_p2"),
+                   textOutput("T_est_p2")
               ),
             )
           )
@@ -102,8 +102,8 @@ sufficient_statistics_ui = function(){
               ),
               card(class = "border-0 bg-transparent shadow-none",
                    textOutput("U_est_p3"),
-                   p("Pred. D: 0"),
-                   p("Pred. T: 0")
+                   textOutput("D_est_p3"),
+                   textOutput("T_est_p3")
               ),
             )
           ),
@@ -121,8 +121,8 @@ sufficient_statistics_ui = function(){
               ),
               card(class = "border-0 bg-transparent shadow-none",
                    textOutput("U_est_p4"),
-                   p("Pred. D: 0"),
-                   p("Pred. T: 0")
+                   textOutput("D_est_p4"),
+                   textOutput("T_est_p4")
               ),
             )
           )
@@ -143,8 +143,8 @@ sufficient_statistics_ui = function(){
             ),
             card(class = "border-0 bg-transparent shadow-none",
                  textOutput("U_est_p5"),
-                 p("Pred. D: 0"),
-                 p("Pred. T: 0")
+                 textOutput("D_est_p5"),
+                 textOutput("T_est_p5")
             ),
           )
         )
@@ -174,6 +174,10 @@ sufficient_statistics_server = function(input, output, session, process_list){
   
   process_type = reactive({
     return(attributes(process_list())$type)
+  })
+  
+  theta_vec = reactive({
+    return(attributes(process_list())$theta)
   })
   
   theta_update = reactive({
@@ -210,6 +214,8 @@ sufficient_statistics_server = function(input, output, session, process_list){
 
     EU_list = list()
     
+    theta = theta_vec()
+    
     update_func = theta_update()
 
     for(i in 1:length(Y_list)){
@@ -223,12 +229,73 @@ sufficient_statistics_server = function(input, output, session, process_list){
       EU_list[[i]] = E_U(a = a, b = b, t = t,
                          K = input$K, M0 = input$M0,
                          Mj = input$Mj, J = input$J,
-                         theta_update = update_func)
+                         theta_update = update_func,
+                         theta = theta)
 
     }
 
     return(EU_list)
 
+  })
+  
+  ED_list = reactive({
+    
+    Y_list = Y_list()
+    
+    ED_list = list()
+    
+    theta = theta_vec()
+    
+    update_func = theta_update()
+    
+    for(i in 1:length(Y_list)){
+      
+      Y = Y_list[[i]]
+      
+      a = Y[[1]]
+      b = Y[[2]]
+      t = Y[[3]]
+      
+      ED_list[[i]] = E_D(a = a, b = b, t = t,
+                         K = input$K, M0 = input$M0,
+                         Mj = input$Mj, J = input$J,
+                         theta_update = update_func,
+                         theta = theta)
+      
+    }
+    
+    return(ED_list)
+    
+  })
+  
+  ET_list = reactive({
+    
+    Y_list = Y_list()
+    
+    ET_list = list()
+    
+    theta = theta_vec()
+    
+    update_func = theta_update()
+    
+    for(i in 1:length(Y_list)){
+      
+      Y = Y_list[[i]]
+      
+      a = Y[[1]]
+      b = Y[[2]]
+      t = Y[[3]]
+      
+      ET_list[[i]] = E_T(a = a, b = b, t = t,
+                         K = input$K, M0 = input$M0,
+                         Mj = input$Mj, J = input$J,
+                         theta_update = update_func,
+                         theta = theta)
+      
+    }
+    
+    return(ET_list)
+    
   })
   
   output$Y_p1 = renderText({
@@ -298,31 +365,31 @@ sufficient_statistics_server = function(input, output, session, process_list){
   
   output$U_est_p1 = renderText({
     EU_list = EU_list()
-    x = EU_list[[1]]
+    x = EU_list[[1]] |> round(1)
     paste0("Est. U: ", x)
   })
   
   output$U_est_p2 = renderText({
     EU_list = EU_list()
-    x = EU_list[[2]]
+    x = EU_list[[2]] |> round(1)
     paste0("Est. U: ", x)
   })
   
   output$U_est_p3 = renderText({
     EU_list = EU_list()
-    x = EU_list[[3]]
+    x = EU_list[[3]] |> round(1)
     paste0("Est. U: ", x)
   })
   
   output$U_est_p4 = renderText({
     EU_list = EU_list()
-    x = EU_list[[4]]
+    x = EU_list[[4]] |> round(1)
     paste0("Est. U: ", x)
   })
   
   output$U_est_p5 = renderText({
     EU_list = EU_list()
-    x = EU_list[[5]]
+    x = EU_list[[5]] |> round(1)
     paste0("Est. U: ", x)
   })
   
@@ -356,6 +423,36 @@ sufficient_statistics_server = function(input, output, session, process_list){
     paste0("Real D: ", x)
   })
   
+  output$D_est_p1 = renderText({
+    ED_list = ED_list()
+    x = ED_list[[1]] |> round(1)
+    paste0("Est. D: ", x)
+  })
+  
+  output$D_est_p2 = renderText({
+    ED_list = ED_list()
+    x = ED_list[[2]] |> round(1)
+    paste0("Est. D: ", x)
+  })
+  
+  output$D_est_p3 = renderText({
+    ED_list = ED_list()
+    x = ED_list[[3]] |> round(1)
+    paste0("Est. D: ", x)
+  })
+  
+  output$D_est_p4 = renderText({
+    ED_list = ED_list()
+    x = ED_list[[4]] |> round(1)
+    paste0("Est. D: ", x)
+  })
+  
+  output$D_est_p5 = renderText({
+    ED_list = ED_list()
+    x = ED_list[[5]] |> round(1)
+    paste0("Est. D: ", x)
+  })
+  
   output$T_real_p1 = renderText({
     sufficient_list = sufficient_list()
     x = sufficient_list[[1]] |> getElement("T.") |> sum()
@@ -384,6 +481,36 @@ sufficient_statistics_server = function(input, output, session, process_list){
     sufficient_list = sufficient_list()
     x = sufficient_list[[5]] |> getElement("T.") |> sum()
     paste0("Real T: ", x)
+  })
+  
+  output$T_est_p1 = renderText({
+    ET_list = ET_list()
+    x = ET_list[[1]] |> round(1)
+    paste0("Est. T: ", x)
+  })
+  
+  output$T_est_p2 = renderText({
+    ET_list = ET_list()
+    x = ET_list[[2]] |> round(1)
+    paste0("Est. T: ", x)
+  })
+  
+  output$T_est_p3 = renderText({
+    ET_list = ET_list()
+    x = ET_list[[3]] |> round(1)
+    paste0("Est. T: ", x)
+  })
+  
+  output$T_est_p4 = renderText({
+    ET_list = ET_list()
+    x = ET_list[[4]] |> round(1)
+    paste0("Est. T: ", x)
+  })
+  
+  output$T_est_p5 = renderText({
+    ET_list = ET_list()
+    x = ET_list[[5]] |> round(1)
+    paste0("Est. T: ", x)
   })
   
 }
